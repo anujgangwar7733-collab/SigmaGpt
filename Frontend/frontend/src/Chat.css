@@ -1,0 +1,35 @@
+.chat {
+  width: 100%;
+  max-width: 700px;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 1rem 0;
+}
+
+.userDiv {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 0.9rem;
+}
+
+.gptDiv {
+  display: flex;
+  justify-content: flex-start;
+  font-size: 0.9rem;
+}
+
+.userMessage {
+  background-color: #323232;
+  padding: 10px 18px;
+  border-radius: 14px;
+  max-width: 500px;
+  width: fit-content;
+}
+
+.gptMessage {
+  text-align: left;
+  max-width: 500px;
+}
