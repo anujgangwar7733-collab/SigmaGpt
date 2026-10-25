@@ -5,35 +5,66 @@ import { MyContext } from "./MyContext";
 import {v1 as uuidv1} from "uuid";
 
 function Sidebar() {
-    const {allThreads , setAllThreads,currThreadId, setNewChat,setprompt,setReply} = useContext(MyContext);
+    const { allThreads, setAllThreads, currThreadId, setNewChat, setPrompt, reply, setReply, setCurrThreadId, setPrevChats } = useContext(MyContext);
 
-    const getAllThreads = async()=>{
-
+    const getAllThreads = async () => {
       try {
         const response = await fetch("http://localhost:8080/api/threads");
-        const res =await response.json();
-        const filteredData = res.map(thread=>({ThreadId:thread.ThreadId,title:thread.title}))
-        console.log(filteredData);
-        console.log(res);
-      } catch(err){
-        console.log(err)
+        const res = await response.json();
+        if (Array.isArray(res)) {
+          setAllThreads(res);
+        }
+      } catch (err) {
+        console.log(err);
       }
     };
 
-    useEffect(()=>{
+    useEffect(() => {
       getAllThreads();
-    }, [currThreadId]);
+    }, [currThreadId, reply]);
   
-  const createNewChat =  () =>{
-    setNewChat(true);
-    setprompt("");
-    setReply(null);
-  }
+    const createNewChat = () => {
+      setNewChat(true);
+      setPrompt("");
+      setReply(null);
+      setPrevChats([]);
+      setCurrThreadId(uuidv1());
+    };
+
+    const changeThread = async (newThreadId) => {
+      setCurrThreadId(newThreadId);
+      setNewChat(false);
+      setReply(null);
+      try {
+        const response = await fetch(`http://localhost:8080/api/thread/${newThreadId}`);
+        const messages = await response.json();
+        if (Array.isArray(messages)) {
+          setPrevChats(messages);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    const deleteThread = async (e, threadIdToDelete) => {
+      e.stopPropagation();
+      try {
+        await fetch(`http://localhost:8080/api/thread/${threadIdToDelete}`, {
+          method: "DELETE"
+        });
+        setAllThreads((prev) => prev.filter((t) => (t.threadId || t._id) !== threadIdToDelete));
+        if (currThreadId === threadIdToDelete) {
+          createNewChat();
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
   return (
     <section className="sidebar">
       {/* new chat button */}
-      <button>
+      <button onClick={createNewChat}>
         <img src={blackLogo} alt="gpt logo" className="logo" />
         {/* icon link */}
         <span><i className="fa-solid fa-pen-to-square"></i></span>
@@ -42,10 +73,22 @@ function Sidebar() {
       {/* history */}
 
       <ul className="history">
-        {allThreads?.map((thread, idx) => (
-        <li key={thread.id ?? idx}>{thread.title}</li>
-        ))
-        }
+        {allThreads?.map((thread, idx) => {
+          const tId = thread.threadId || thread._id;
+          return (
+            <li
+              key={tId || idx}
+              className={currThreadId === tId ? "highlighted" : ""}
+              onClick={() => changeThread(tId)}
+            >
+              <span>{thread.title}</span>
+              <i
+                className="fa-solid fa-trash"
+                onClick={(e) => deleteThread(e, tId)}
+              ></i>
+            </li>
+          );
+        })}
       </ul>
 
       {/* sign */}

@@ -27,7 +27,7 @@ function Chat() {
         <div className="chat">
             {newChat && <h1>Start a New Chat!</h1>}
             {
-                prevChats?.slice(0, -1).map((chat, idx) =>
+                (latestReply !== null ? prevChats?.slice(0, -1) : prevChats)?.map((chat, idx) => (
                     <div className={chat.role === "user" ? "userDiv" : "gptDiv"} key={idx}>
                         {
                             chat.role === "user" ?
@@ -35,7 +35,7 @@ function Chat() {
                                 <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{chat.content}</ReactMarkdown>
                         }
                     </div>
-                )
+                ))
             }
 
             {
