@@ -7,6 +7,7 @@ import { ScaleLoader } from "react-spinners";
 function ChatWindow() {
   const { prompt, setPrompt, reply, setReply, currThreadId, setPrevChats, setNewChat } = useContext(MyContext);
   const [loading, setLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const getReply = async () => {
     if (!prompt.trim()) return;
@@ -53,16 +54,39 @@ function ChatWindow() {
     }
     setPrompt("");
   }, [reply]); // Jab naya reply backend se aayega tabhi trigger hoga
+   
+  const handleProfileClick = () => {
+    setIsOpen(!isOpen);
+  };
 
   return (
     <div className="chatWindow">
       <div className="navbar">
         <span>SigmaGPT <i className="fa-solid fa-chevron-down"></i></span>
-        <div className="userIconDiv">
-          <span><i className="fa-solid fa-user"></i></span>
+        <div className="userIconDiv" onClick={handleProfileClick}>
+          <div className="userIcon">
+            <i className="fa-solid fa-user"></i>
+          </div>
         </div>
       </div>
       <Chat />
+
+      {isOpen && (
+        <div className="dropDown">
+          <div className="dropDownItem">
+            <i className="fa-solid fa-cloud-arrow-up" style={{ marginRight: "10px" }}></i>
+            Upgrade plan
+          </div>
+          <div className="dropDownItem">
+            <i className="fa-solid fa-gear" style={{ marginRight: "10px" }}></i>
+            Settings
+          </div>
+          <div className="dropDownItem" onClick={() => window.location.reload()}>
+            <i className="fa-solid fa-right-from-bracket" style={{ marginRight: "10px" }}></i>
+            Logout
+          </div>
+        </div>
+      )}
 
       {loading && <ScaleLoader color="#fff" />}
 
