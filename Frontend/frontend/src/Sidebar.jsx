@@ -52,7 +52,9 @@ function Sidebar() {
         await fetch(`http://localhost:8080/api/thread/${threadIdToDelete}`, {
           method: "DELETE"
         });
-        setAllThreads((prev) => prev.filter((t) => (t.threadId || t._id) !== threadIdToDelete));
+        setAllThreads((prev) =>
+          prev.filter((t) => t._id !== threadIdToDelete && t.threadId !== threadIdToDelete)
+        );
         if (currThreadId === threadIdToDelete) {
           createNewChat();
         }
@@ -75,16 +77,17 @@ function Sidebar() {
       <ul className="history">
         {allThreads?.map((thread, idx) => {
           const tId = thread.threadId || thread._id;
+          const uniqueKey = thread._id || `${tId}_${idx}`;
           return (
             <li
-              key={tId || idx}
+              key={uniqueKey}
               className={currThreadId === tId ? "highlighted" : ""}
               onClick={() => changeThread(tId)}
             >
               <span>{thread.title}</span>
               <i
                 className="fa-solid fa-trash"
-                onClick={(e) => deleteThread(e, tId)}
+                onClick={(e) => deleteThread(e, thread._id || tId)}
               ></i>
             </li>
           );
