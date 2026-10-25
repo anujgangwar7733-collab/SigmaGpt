@@ -41,11 +41,14 @@ router.get("/threads", async (req, res) => {
 router.get("/thread/:threadId", async (req, res) => {
     const { threadId } = req.params;
     try {
-        const thread = await Thread.findOne({ threadId });
+        const query = mongoose.isValidObjectId(threadId)
+            ? { $or: [{ threadId }, { _id: threadId }] }
+            : { threadId };
+        const thread = await Thread.findOne(query);
         if (!thread) {
             return res.status(404).json({ error: "Thread not found" });
         }
-        res.json(thread.messages);
+        res.json(thread.messages || []);
 
     }
     catch (err) {
@@ -61,7 +64,10 @@ router.delete("/thread/:threadId", async (req, res) => {
     const { threadId } = req.params;
 
     try {
-        const deletedThread = await Thread.findOneAndDelete({ threadId });
+        const query = mongoose.isValidObjectId(threadId)
+            ? { $or: [{ threadId }, { _id: threadId }] }
+            : { threadId };
+        const deletedThread = await Thread.findOneAndDelete(query);
 
         if (!deletedThread) {
             return res.status(404).json({ error: "Thread not found" });
