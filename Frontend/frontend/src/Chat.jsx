@@ -7,23 +7,22 @@ import "highlight.js/styles/github-dark.css"
 
 function Chat() {
     const { newChat, prevChats, reply } = useContext(MyContext);
-    const [lastestReply, setLastestReply] = useState(null);
+    const [latestReply, setLatestReply] = useState(null);
 
     useEffect(() => {
-        if (!prevChats?.length) return;
+        if (!prevChats?.length || !reply) return;
 
         const content = reply.split(" ");
         let idx = 0;
         const interval = setInterval(() => {
-            setLastestReply(content.slice(0, idx + 1).join(""));
+            setLatestReply(content.slice(0, idx + 1).join(" "));
             idx++;
             if (idx >= content.length) clearInterval(interval);
-
         }, 40);
 
         return () => clearInterval(interval);
+    }, [prevChats, reply]);
 
-    }), [prevChats, reply]
     return (
         <div className="chat">
             {newChat && <h1>Start a New Chat!</h1>}
@@ -33,21 +32,18 @@ function Chat() {
                         {
                             chat.role === "user" ?
                                 <p className="userMessage">{chat.content}</p> :
-                                <ReactMarkdown rehypePlugins={rehyprHighlight}>{chat.content}</ReactMarkdown>
+                                <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{chat.content}</ReactMarkdown>
                         }
                     </div>
                 )
             }
 
             {
-                prevChat.lenght >0  && latestReply != null &&
+                prevChats?.length > 0 && latestReply != null &&
                 <div className="gptDiv" key={"typing"}>
-                    <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{lastestReply}</ReactMarkdown>
-                    </div>
-
+                    <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{latestReply}</ReactMarkdown>
+                </div>
             }
-
-
         </div>
     );
 }

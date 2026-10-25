@@ -2,15 +2,15 @@ import "./sidebar.css";
 import blackLogo from "./assets/blacklogo.png";
 import {useContext, useEffect} from "react";
 import { MyContext } from "./MyContext";
-
+import {v1 as uuidv1} from "uuid";
 
 function Sidebar() {
-    const {allThreads , setAllThreads,currThreadId} = useContext(MyContext);
+    const {allThreads , setAllThreads,currThreadId, setNewChat,setprompt,setReply} = useContext(MyContext);
 
     const getAllThreads = async()=>{
 
       try {
-        const response = await fetch("http:localhost:8080/api/thread");
+        const response = await fetch("http://localhost:8080/api/threads");
         const res =await response.json();
         const filteredData = res.map(thread=>({ThreadId:thread.ThreadId,title:thread.title}))
         console.log(filteredData);
@@ -22,8 +22,14 @@ function Sidebar() {
 
     useEffect(()=>{
       getAllThreads();
-    } ,[currThreadId])
-;
+    }, [currThreadId]);
+  
+  const createNewChat =  () =>{
+    setNewChat(true);
+    setprompt("");
+    setReply(null);
+  }
+
   return (
     <section className="sidebar">
       {/* new chat button */}
@@ -34,10 +40,12 @@ function Sidebar() {
       </button>
 
       {/* history */}
+
       <ul className="history">
-         filterData?.map((thread,idx) => {
-           <li key={idx}>{thread.title}</li>
-         })
+        {allThreads?.map((thread, idx) => (
+        <li key={thread.id ?? idx}>{thread.title}</li>
+        ))
+        }
       </ul>
 
       {/* sign */}

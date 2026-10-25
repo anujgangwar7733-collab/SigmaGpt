@@ -19,13 +19,17 @@ router.post("/test", async (req, res) => {
     }
 });
 
+import mongoose from "mongoose";
+
 //Get all thread
 
 router.get("/threads", async (req, res) => {
     try {
-        const threads = await Thread.find();
+        if (mongoose.connection.readyState !== 1) {
+            return res.json([]);
+        }
+        const threads = await Thread.find().sort({ updatedAt: -1 });
         res.json(threads);
-        // descending order of updatedAt...most recent data 
     } catch (err) {
         console.log(err);
         res.status(500).json({ error: "Failed to get threads" });
