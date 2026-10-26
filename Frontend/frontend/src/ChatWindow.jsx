@@ -3,6 +3,7 @@ import Chat from "./Chat.jsx";
 import { useContext, useState, useEffect } from "react";
 import { MyContext } from "./MyContext.jsx";
 import { ScaleLoader } from "react-spinners";
+import { BASE_URL } from "./config";
 
 function ChatWindow() {
   const { prompt, setPrompt, reply, setReply, currThreadId, setPrevChats, setNewChat } = useContext(MyContext);
@@ -16,7 +17,7 @@ function ChatWindow() {
 
     try {
       const options = {
-        method: "POST",  
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -26,7 +27,7 @@ function ChatWindow() {
         }),
       };
 
-      const response = await fetch("http://localhost:8080/api/chat", options);
+      const response = await fetch(`${BASE_URL}/api/chat`, options);
       const res = await response.json();
       console.log("Response:", res);
       setReply(res.reply);
@@ -54,7 +55,7 @@ function ChatWindow() {
     }
     setPrompt("");
   }, [reply]); // Jab naya reply backend se aayega tabhi trigger hoga
-   
+
   const handleProfileClick = () => {
     setIsOpen(!isOpen);
   };
@@ -95,13 +96,13 @@ function ChatWindow() {
           <input
             placeholder="Ask Anything"
             value={prompt}
-            onChange ={(e) => setPrompt(e.target.value)
+            onChange={(e) => setPrompt(e.target.value)
             }
             onKeyDown={(e) => e.key === "Enter" && getReply()
             }
           />
 
-          
+
           <div id="submit" onClick={getReply}>
             <i className="fa-solid fa-paper-plane"></i>
           </div>

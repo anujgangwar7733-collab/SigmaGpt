@@ -3,13 +3,14 @@ import blackLogo from "./assets/blacklogo.png";
 import {useContext, useEffect} from "react";
 import { MyContext } from "./MyContext";
 import {v1 as uuidv1} from "uuid";
+import { BASE_URL } from "./config";
 
 function Sidebar() {
     const { allThreads, setAllThreads, currThreadId, setNewChat, setPrompt, reply, setReply, setCurrThreadId, setPrevChats } = useContext(MyContext);
 
     const getAllThreads = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/threads");
+        const response = await fetch(`${BASE_URL}/api/threads`);
         const res = await response.json();
         if (Array.isArray(res)) {
           setAllThreads(res);
@@ -36,7 +37,7 @@ function Sidebar() {
       setNewChat(false);
       setReply(null);
       try {
-        const response = await fetch(`http://localhost:8080/api/thread/${newThreadId}`);
+        const response = await fetch(`${BASE_URL}/api/thread/${newThreadId}`);
         const messages = await response.json();
         if (Array.isArray(messages)) {
           setPrevChats(messages);
@@ -49,7 +50,7 @@ function Sidebar() {
     const deleteThread = async (e, threadIdToDelete) => {
       e.stopPropagation();
       try {
-        await fetch(`http://localhost:8080/api/thread/${threadIdToDelete}`, {
+        await fetch(`${BASE_URL}/api/thread/${threadIdToDelete}`, {
           method: "DELETE"
         });
         setAllThreads((prev) =>
