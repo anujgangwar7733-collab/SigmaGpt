@@ -23,7 +23,8 @@ app.listen(PORT, () => {
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    const uri = process.env.MONGODB_URI || "mongodb+srv://anujgangwar7733_db_user:B62QUwhQILNSKqgc@cluster0.7lty8gv.mongodb.net/?retryWrites=true&w=majority";
+    await mongoose.connect(uri);
     console.log("Connected to MongoDB");
   } catch (err) {
     console.error("MongoDB connection error:", err.message);

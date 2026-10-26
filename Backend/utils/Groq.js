@@ -3,8 +3,8 @@ import "dotenv/config";
 const getOpenAIAPIResponse = async (message) => {
     const apiKey = (process.env.GROQ_API_KEY || "").trim();
     if (!apiKey) {
-        console.error("GROQ_API_KEY is missing in environment variables!");
-        return "Backend Error: GROQ_API_KEY is not set in Vercel backend Environment Variables. Please add it and Redeploy.";
+        console.error("GROQ_API_KEY is not defined in environment variables!");
+        return "Backend Error: GROQ_API_KEY environment variable is not set in Vercel backend settings.";
     }
 
     const options = {
@@ -14,7 +14,7 @@ const getOpenAIAPIResponse = async (message) => {
             "Authorization": `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-            model: "llama-3.3-70b-versatile",
+            model: "openai/gpt-oss-20b",
             messages: [{
                 role: "user",
                 content: message
